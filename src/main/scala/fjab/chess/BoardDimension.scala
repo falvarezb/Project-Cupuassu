@@ -1,6 +1,6 @@
 package fjab.chess
 
 trait BoardDimension{
-  def x(): Int
-  def y(): Int
+  val  x: Int
+  val y: Int
 }

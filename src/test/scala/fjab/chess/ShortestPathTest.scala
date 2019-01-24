@@ -1,5 +1,6 @@
 package fjab.chess
 
+import fjab.chess.apps.{ShortestPathInFiniteBoardApp, ShortestPathInInfiniteBoardApp}
 import org.scalatest.FunSpec
 
 class ShortestPathTest extends FunSpec {

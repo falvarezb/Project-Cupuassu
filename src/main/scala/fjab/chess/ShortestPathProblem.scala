@@ -8,7 +8,7 @@ import scala.collection.mutable.ListBuffer
   * Implementation of Graph to find the shortest path between 2 vertices of the graph
   *
   */
-trait ShortestPathSolution extends Graph[Coordinate]{
+trait ShortestPathProblem extends Graph[Coordinate]{
 
   self: Destination[Coordinate] =>
 
