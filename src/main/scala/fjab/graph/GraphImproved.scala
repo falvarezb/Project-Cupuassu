@@ -1,5 +1,6 @@
 package fjab.graph
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.collection.mutable.{ListBuffer, Set}
 
@@ -14,6 +15,7 @@ trait GraphImproved[T] extends Graph[T]{
     val paths: ListBuffer[Path] = ListBuffer() ++= from
     val exploredVertices: Set[Vertex] = mutable.Set(from.flatten: _*)
 
+    @tailrec
     def next(): Path = paths.headOption match{
       case None => Nil
       case Some(currentVertexPath) =>

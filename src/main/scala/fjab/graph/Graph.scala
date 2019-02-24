@@ -1,5 +1,6 @@
 package fjab.graph
 
+import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
 trait Graph[T] {
@@ -31,6 +32,7 @@ trait Graph[T] {
 
     val paths: ListBuffer[Path] = ListBuffer() ++= from
 
+    @tailrec
     def next(): Path = paths.headOption match{
       case None => Nil
       case Some(currentVertexPath) =>
