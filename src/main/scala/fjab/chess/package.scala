@@ -1,5 +1,9 @@
 package fjab
 
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, Paths}
+import java.nio.file.StandardOpenOption.{APPEND, CREATE, WRITE}
+
 import scala.collection.mutable.ListBuffer
 
 package object chess {
@@ -53,5 +57,15 @@ package object chess {
     }
     result += "\n"
     result
+  }
+
+  def writeToFile(fileName: String, content: String): Unit = {
+    try {
+      Files.write(Paths.get(fileName), content.toString.getBytes(StandardCharsets.UTF_8), CREATE, APPEND, WRITE)
+    }
+    catch{
+      case e: Exception => e.printStackTrace()
+    }
+    ()
   }
 }
