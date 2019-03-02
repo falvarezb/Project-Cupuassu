@@ -4,11 +4,12 @@ import scala.collection.mutable.ListBuffer
 
 package object chess {
 
+  class MultiThread extends scala.annotation.StaticAnnotation
   type Coordinate = (Int, Int)
 
   implicit class RichTuple2(coordinate: Coordinate) {
-    def +(other: Coordinate) = (coordinate._1 + other._1, coordinate._2 + other._2)
-    def -(other: Coordinate) = (coordinate._1 - other._1, coordinate._2 - other._2)
+    def +(other: Coordinate): Coordinate = (coordinate._1 + other._1, coordinate._2 + other._2)
+    def -(other: Coordinate): Coordinate = (coordinate._1 - other._1, coordinate._2 - other._2)
   }
 
   def quadrant(dim: Int): Seq[Coordinate] = {
@@ -40,19 +41,17 @@ package object chess {
     list
   }
 
-
-
-
-  def printPath(path: Seq[Coordinate]) = {
-    println("")
+  def printPath(path: Seq[Coordinate]): String = {
+    var result = "\n"
     val sideLength = math.sqrt(path.size).toInt
     for (i <- 1 to sideLength) {
       val row = new ListBuffer[Int]()
       for (j <- 1 to sideLength) {
         row.append(path.indexOf((i, j)) + 1)
       }
-      println(row.map("%2d".format(_)).mkString("  "))
+      result += row.map("%2d".format(_)).mkString("  ") + "\n"
     }
-    println("")
+    result += "\n"
+    result
   }
 }

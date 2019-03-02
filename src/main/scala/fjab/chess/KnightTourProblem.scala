@@ -16,4 +16,6 @@ trait KnightTourProblem extends Graph[Coordinate]{
     verticesToExplore.prependAll(neighbours) //depth-first search
 
   override def isSolution(path: Path): Boolean = path.length == x * y
+
+  def boardDimension: (Int, Int) = (self.x, self.y)
 }
