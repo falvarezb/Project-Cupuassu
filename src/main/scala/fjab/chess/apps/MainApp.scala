@@ -3,7 +3,7 @@ package fjab.chess.apps
 import java.util.Date
 import java.util.concurrent.Executors
 
-import fjab.chess.{Coordinate, octant, printPath}
+import fjab.chess.{Coordinate, KnightTourProblem, octant, printPath}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -77,12 +77,32 @@ object MainApp extends App {
     }), FiniteDuration(100, DAYS))
   }
 
+  def allPathsStartingAtSquare(dimension: Int, sq: Coordinate, numberOfSolutions: Int, implementationStrategy: KnightTourProblem) = {
+    println(s"=============== dimension: $dimension*$dimension ==================")
+    println(s"=============== square: ${sq.toString()} ==================")
+
+    val start = System.currentTimeMillis()
+    val result = implementationStrategy.findPaths(List(List(sq)), numberOfSolutions)
+    val time = -start + System.currentTimeMillis()
+
+    val threadName = Thread.currentThread().getName
+    println(threadName)
+    result foreach println
+    println(s"$time ms")
+    //result foreach printPath
+    ()
+
+
+  }
+
   println(s"program started at ${new Date()}")
   val globalStart = System.currentTimeMillis()
 
-  (7 to 7) foreach (chessboard(_))
+  //(7 to 7) foreach (chessboard(_))
 
-  val dim = 7
+  val dim = 8
+  List((1,1)).foreach(allPathsStartingAtSquare(dim, _, 1000, WarnsdorffKnightTourApp(dim, dim)))
+  List((1,1)).foreach(allPathsStartingAtSquare(dim, _, 2, KnightTourInFiniteBoardApp(dim, dim)))
   //octant(dim).foreach(square(dim, _))
   //List((1,2),(1,4),(2,3),(3,4),(4,4)).foreach(square(dim, _))
   //-> List((4,4)).foreach(square(dim, _))

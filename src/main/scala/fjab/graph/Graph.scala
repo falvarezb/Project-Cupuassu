@@ -51,6 +51,33 @@ trait Graph[T] {
 
   }
 
+  def findPaths(from: Seq[Path], numberOfSolutions: Int): Seq[Path] = {
+
+    val foundPaths: ListBuffer[Path] = ListBuffer()
+    val pathsInProgress: ListBuffer[Path] = ListBuffer() ++= from
+
+    @tailrec
+    def next(): Unit = pathsInProgress.headOption match{
+      case None => //nothing
+      case Some(currentVertexPath) =>
+        if(isSolution(currentVertexPath)) {
+          foundPaths += currentVertexPath.reverse
+          pathsInProgress.remove(0)
+        }
+        else {
+          val currentVertex = currentVertexPath.head
+          val neighbourVertices = neighbours(currentVertex).filter(isVertexEligibleForPath(_, currentVertexPath))
+          val pathsToNeighbourVertices = neighbourVertices.map(_ :: currentVertexPath)
+          pathsInProgress.remove(0)
+          addNeighbours(pathsInProgress, pathsToNeighbourVertices)
+        }
+        if(foundPaths.length < numberOfSolutions) next()
+    }
+
+    next()
+    foundPaths
+  }
+
   /**
     * Calculate the neighbours of the given vertex.
     * Implementations of this method depend on the nature of the graph: moves allowed from one vertex to another,
