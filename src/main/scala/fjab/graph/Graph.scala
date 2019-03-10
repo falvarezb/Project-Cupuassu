@@ -28,12 +28,14 @@ trait Graph[T] {
     * @param from Initial vertices used to calculate the possible paths
     * @return Path The searched path or Nil if the desired path does not exist
     */
-  def findPath(from: Seq[Path]): Path = {
+  def findPath(from: Seq[Path], yieldTime: Long = Long.MaxValue): Path = {
 
+    val start = System.currentTimeMillis()
     val paths: ListBuffer[Path] = ListBuffer() ++= from
 
     @tailrec
     def next(): Path = paths.headOption match{
+      case _ if System.currentTimeMillis() - start > yieldTime => Nil
       case None => Nil
       case Some(currentVertexPath) =>
         if(isSolution(currentVertexPath)) currentVertexPath.reverse

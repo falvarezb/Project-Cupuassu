@@ -6,7 +6,8 @@ lazy val commonSettings = Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.3" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.3" % "test",
+  "com.typesafe" % "config" % "1.3.2"
 )
 
 scalacOptions ++= Seq(

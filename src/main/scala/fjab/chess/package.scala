@@ -68,4 +68,7 @@ package object chess {
     }
     ()
   }
+
+  def `minute -> ms`(minutes: Long): Long = minutes * 60 * 1000
+  def `ms -> minute`(ms: Long): Double = ms / 60.0 / 1000
 }

@@ -10,7 +10,7 @@ import scala.collection.mutable.{ListBuffer, Set}
   */
 trait GraphImproved[T] extends Graph[T]{
 
-  override def findPath(from: Seq[Path]): Path = {
+  override def findPath(from: Seq[Path], yieldTime: Long): Path = {
 
     val paths: ListBuffer[Path] = ListBuffer() ++= from
     val exploredVertices: Set[Vertex] = mutable.Set(from.flatten: _*)
