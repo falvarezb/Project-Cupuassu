@@ -1,7 +1,7 @@
 package fjab.chess.apps
 
 import java.util.Date
-import java.util.concurrent.Executors
+import java.util.concurrent.{Executors, TimeUnit}
 
 import fjab.Configuration
 import fjab.chess._
@@ -13,8 +13,8 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
 
 object MainApp extends App {
 
-  case class ThreadName(x: String) extends AnyVal
-  case class ComputationTime(x: Long) extends AnyVal
+  //case class ThreadName(x: String) extends AnyVal
+  //case class ComputationTime(x: Long) extends AnyVal
 
 
   val summary: mutable.Map[String, mutable.Map[String,ListBuffer[Long]]] = mutable.Map()
@@ -23,6 +23,7 @@ object MainApp extends App {
 
 
   def chessboard(dimension: Int) = {
+      println(s"program started at ${new Date()}")
       println(s"=============== dimension: $dimension*$dimension ==================")
 
       val app = WarnsdorffKnightTourApp(dimension, dimension)
@@ -69,11 +70,11 @@ object MainApp extends App {
     println(s"=============== square: ${sq.toString()} ==================")
 
 
-    val programExecutionSummary: mutable.Map[ThreadName, ListBuffer[ComputationTime]] = mutable.Map()
+    //val programExecutionSummary: mutable.Map[ThreadName, ListBuffer[ComputationTime]] = mutable.Map()
     val threadPool = Executors.newFixedThreadPool(threads)
     implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
 
-    val fileName = s"pathsFromSquare${sq._1}_${sq._2}.txt"
+    val fileName = s"reports/pathsFromSquare${sq._1}_${sq._2}.txt"
 
 
     val neighboursList = app.neighbours(sq)
@@ -87,11 +88,11 @@ object MainApp extends App {
           val time = -start + System.currentTimeMillis()
 
           this.synchronized {
-            val threadName = ThreadName(Thread.currentThread().getName)
+            //val threadName = ThreadName(Thread.currentThread().getName)
             println(result)
             println(s"$time ms")
-            if(programExecutionSummary.get(threadName).isDefined) programExecutionSummary(threadName) += ComputationTime(time)
-            else programExecutionSummary += threadName -> ListBuffer(ComputationTime(time))
+            //if(programExecutionSummary.get(threadName).isDefined) programExecutionSummary(threadName) += ComputationTime(time)
+            //else programExecutionSummary += threadName -> ListBuffer(ComputationTime(time))
 
             val content = result.toString() + "\n" + s"$time ms" + "\n" + printPath(result) + "\n"
             writeToFile(fileName, content)
@@ -99,7 +100,7 @@ object MainApp extends App {
         }
     }), FiniteDuration(100, DAYS))
 
-    writeToFile(fileName, programExecutionSummary.toString())
+    //writeToFile(fileName, programExecutionSummary.toString())
 
     println(s"Global duration: ${-globalStart + System.currentTimeMillis()} ms")
     threadPool.shutdown()
@@ -115,9 +116,11 @@ object MainApp extends App {
   @MultiThread
   def anyPathStartingAtSquare(dimension: Int, sq: Coordinate, threads: Int): Unit = {
 
-    val moves = List((2,1), (1,2), (-1,2), (-2,1), (-2,-1), (-1,-2), (1,-2), (2,-1)).permutations.toStream
+    assert(Configuration.yieldTime.unit == TimeUnit.MINUTES)
+    val (from, num) = (480*0, 480)
+    val moves = List((2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)).permutations.toList//.slice(from, from + num)
     val globalStart = System.currentTimeMillis()
-    val fileName = s"reports/pathsFromSquare${sq._1}_${sq._2}_$globalStart.txt"
+    val fileName = s"reports/_${dimension}x${dimension}/pathsFromSquare${sq._1}_${sq._2}_$globalStart.txt"
 
     {
       val content =
@@ -125,47 +128,53 @@ object MainApp extends App {
            |program started at ${new Date()}
            |=============== dimension: $dimension*$dimension ==================
            |=============== square: $sq ==================
-           |=============== yield time: ${Configuration.yieldTime.length} min ==================
+           |=============== yield time: ${Configuration.yieldTime.length} ${Configuration.yieldTime.unit} ==================
            |=============== report interval: ${Configuration.reportInterval} permutations ==================
-           |===============number of permutations to calculate: ${moves.length} ==================
-           |===============number of threads: $threads ==================
+           |=============== number of permutations to calculate: ${moves.length} from $from to ${from + num} ==================
+           |=============== number of threads: $threads ==================
            |""".stripMargin
 
       println(content)
       writeToFile(fileName, content)
     }
 
-    val programExecutionSummary: mutable.Map[ThreadName, ListBuffer[ComputationTime]] = mutable.Map()
+    //val programExecutionSummary: mutable.Map[ThreadName, ListBuffer[ComputationTime]] = mutable.Map()
+    val computationTimeOfSuccessfulPaths = new ListBuffer[Long]()
     val threadPool = Executors.newFixedThreadPool(threads)
     implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
 
     var counter = 0
+    val resultSet = mutable.Set[List[(Int,Int)]]()
 
     Await.result(Future.sequence(moves.map {
       moves =>
         Future {
+            //val localDeadEnds = new ListBuffer[Long]()
             val app = KnightTourWithCustomMovesApp(dimension, dimension, moves)
-            val start = System.currentTimeMillis()
+            val localStart = System.currentTimeMillis()
             val result = app.findPath(List(List(sq)), `minute -> ms`(Configuration.yieldTime.length))
 
-            this.synchronized {
+          this.synchronized {
 
               counter += 1
+              //deadEndTimes ++= localDeadEnds
               if(counter % Configuration.reportInterval == 0){
                 val content = s"\n====> $counter permutations tried in ${`ms -> minute`(System.currentTimeMillis() - globalStart)} min \n"
                 println(content)
                 writeToFile(fileName, content)
               }
 
-              if(result.nonEmpty) {
-                val time = -start + System.currentTimeMillis()
-                val threadName = ThreadName(Thread.currentThread().getName)
+              if(result.nonEmpty && !resultSet.contains(result)) {
+                resultSet += result
+                val time = -localStart + System.currentTimeMillis()
+                //val threadName = ThreadName(Thread.currentThread().getName)
                 println(result)
                 println(s"$time ms")
-                if (programExecutionSummary.get(threadName).isDefined) programExecutionSummary(threadName) += ComputationTime(time)
-                else programExecutionSummary += threadName -> ListBuffer(ComputationTime(time))
+                computationTimeOfSuccessfulPaths += time
+                //if (programExecutionSummary.get(threadName).isDefined) programExecutionSummary(threadName) += ComputationTime(time)
+                //else programExecutionSummary += threadName -> ListBuffer(ComputationTime(time))
 
-                val content = result.toString() + "\n" + s"$time ms" + "\n" + printPath(result) + "\n"
+                val content = result.toString() + "\n" + s"$time ms" + "\n"
                 writeToFile(fileName, content)
             }
           }
@@ -177,7 +186,9 @@ object MainApp extends App {
       val content =
         s"""
            |
-           |Global duration: ${-globalStart + System.currentTimeMillis()} ms
+           |Global duration: ${`ms -> minute`(System.currentTimeMillis() - globalStart)} min
+           |Paths found: ${computationTimeOfSuccessfulPaths.length}
+           |Computation times in ms: ${computationTimeOfSuccessfulPaths.mkString(",")}
            |""".stripMargin
 
       println(content)
@@ -210,7 +221,7 @@ object MainApp extends App {
 
   (7 to 7) foreach (chessboard(_))
 
-  val dim = 7
+  val dimension = Configuration.dim
   val square: Coordinate = Configuration.square
   //List((1,1)).foreach(allPathsStartingAtSquare(_, 1000, WarnsdorffKnightTourApp(dim, dim)))
   //List((1,1)).foreach(allPathsStartingAtSquare(_, 2, KnightTourInFiniteBoardApp(dim, dim)))
@@ -221,7 +232,7 @@ object MainApp extends App {
   //xxx List((3,4)).foreach(square(dim, _))
 
 
-  //anyPathStartingAtSquare(dim, square, 8)
+  //anyPathStartingAtSquare(dimension, square, Configuration.numberThreads)
 
 //  println(summary)
 //  println(s"Global duration: ${-globalStart + System.currentTimeMillis()}")

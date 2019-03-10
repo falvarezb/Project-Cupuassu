@@ -30,6 +30,7 @@ trait Graph[T] {
     */
   def findPath(from: Seq[Path], yieldTime: Long = Long.MaxValue): Path = {
 
+    //val deadEndsLength = new ListBuffer[Long]()
     val start = System.currentTimeMillis()
     val paths: ListBuffer[Path] = ListBuffer() ++= from
 
@@ -42,6 +43,9 @@ trait Graph[T] {
         else {
           val currentVertex = currentVertexPath.head
           val neighbourVertices = neighbours(currentVertex).filter(isVertexEligibleForPath(_, currentVertexPath))
+//          if(neighbourVertices.isEmpty){
+//            deadEndsLength += currentVertexPath.length
+//          }
           val pathsToNeighbourVertices = neighbourVertices.map(_ :: currentVertexPath)
           paths.remove(0)
           addNeighbours(paths, pathsToNeighbourVertices)
@@ -49,7 +53,18 @@ trait Graph[T] {
         }
     }
 
-    next()
+    val r = next()
+
+//      val l = deadEndsLength.length.toDouble
+//      val avg = deadEndsLength.sum/l
+//      val max = deadEndsLength.max
+//      //val std = deadEnds.map(x => (x-avg)*(x-avg)).sum/l
+//    val min = deadEndsLength.min
+//      println(s"${Thread.currentThread().getName}: numDeadEnds:$l, avgDepth:$avg, maxDepth:$max, minDepth:$min")
+
+    r
+
+
 
   }
 

@@ -1,6 +1,0 @@
-List()
-3 ms
-
-
-
-Map(ThreadName(pool-2-thread-1) -> ListBuffer(ComputationTime(3)))
