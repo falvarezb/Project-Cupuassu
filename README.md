@@ -1,2 +1,2 @@
 # Project-Cupuassu
-Repo with maths and competitive programming problems
+Project to calculate Knight's Tours on a chessboard
