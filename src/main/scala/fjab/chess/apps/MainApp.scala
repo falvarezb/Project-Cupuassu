@@ -117,7 +117,7 @@ object MainApp extends App {
   def anyPathStartingAtSquare(dimension: Int, sq: Coordinate, threads: Int): Unit = {
 
     assert(Configuration.yieldTime.unit == TimeUnit.MINUTES)
-    val (from, num) = (480*0, 480)
+    //val (from, num) = (480*1, 480*2)
     val moves = List((2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)).permutations.toList//.slice(from, from + num)
     val globalStart = System.currentTimeMillis()
     val fileName = s"reports/_${dimension}x${dimension}/pathsFromSquare${sq._1}_${sq._2}_$globalStart.txt"
@@ -130,7 +130,7 @@ object MainApp extends App {
            |=============== square: $sq ==================
            |=============== yield time: ${Configuration.yieldTime.length} ${Configuration.yieldTime.unit} ==================
            |=============== report interval: ${Configuration.reportInterval} permutations ==================
-           |=============== number of permutations to calculate: ${moves.length} from $from to ${from + num} ==================
+           |=============== number of permutations to calculate: ${moves.length}  ==================
            |=============== number of threads: $threads ==================
            |""".stripMargin
 
@@ -219,7 +219,7 @@ object MainApp extends App {
 //  println(s"program started at ${new Date()}")
 //  val globalStart = System.currentTimeMillis()
 
-  (7 to 7) foreach (chessboard(_))
+  //(7 to 7) foreach (chessboard(_))
 
   val dimension = Configuration.dim
   val square: Coordinate = Configuration.square
@@ -232,7 +232,7 @@ object MainApp extends App {
   //xxx List((3,4)).foreach(square(dim, _))
 
 
-  //anyPathStartingAtSquare(dimension, square, Configuration.numberThreads)
+  anyPathStartingAtSquare(dimension, square, Configuration.numberThreads)
 
 //  println(summary)
 //  println(s"Global duration: ${-globalStart + System.currentTimeMillis()}")

@@ -66,3 +66,5 @@ fabric.properties
 
 project/project/
 project/target/
+
+.ipynb_checkpoints/
