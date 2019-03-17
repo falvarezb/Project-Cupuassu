@@ -1,2 +1,2 @@
 # Project-Cupuassu
-Project to calculate Knight's Tours on a chessboard
+Project to explore Knight's tours on a chessboard
