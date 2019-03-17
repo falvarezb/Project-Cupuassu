@@ -1,0 +1,68 @@
+
+program started at Sun Mar 17 19:29:09 GMT 2019
+=============== dimension: 7*7 ==================
+=============== square: (1,1) ==================
+=============== yield time: 2 MINUTES ==================
+=============== report interval: 8 permutations ==================
+=============== number of permutations to calculate: 216  ==================
+=============== permutation interval: from 1000 to 1216  ==================
+=============== number of threads: 8 ==================
+
+====> 8 permutations tried in 1.2331833333333333 min 
+
+====> 16 permutations tried in 1.44975 min 
+
+====> 24 permutations tried in 2.0008666666666666 min 
+
+====> 32 permutations tried in 4.000883333333333 min 
+
+====> 40 permutations tried in 5.214033333333334 min 
+
+====> 48 permutations tried in 6.000916666666667 min 
+
+====> 56 permutations tried in 8.000916666666667 min 
+
+====> 64 permutations tried in 9.066 min 
+
+====> 72 permutations tried in 11.066033333333333 min 
+
+====> 80 permutations tried in 13.066049999999999 min 
+
+====> 88 permutations tried in 15.066066666666668 min 
+
+====> 96 permutations tried in 17.0661 min 
+
+====> 104 permutations tried in 19.066116666666666 min 
+
+====> 112 permutations tried in 21.066133333333337 min 
+
+====> 120 permutations tried in 23.06615 min 
+
+====> 128 permutations tried in 25.066166666666668 min 
+
+====> 136 permutations tried in 27.066183333333335 min 
+
+====> 144 permutations tried in 29.066200000000002 min 
+
+====> 152 permutations tried in 31.066216666666666 min 
+
+====> 160 permutations tried in 33.06623333333333 min 
+
+====> 168 permutations tried in 35.06625 min 
+
+====> 176 permutations tried in 37.06628333333333 min 
+
+====> 184 permutations tried in 39.066300000000005 min 
+
+====> 192 permutations tried in 41.066316666666665 min 
+
+====> 200 permutations tried in 43.06635 min 
+
+====> 208 permutations tried in 45.06636666666667 min 
+
+====> 216 permutations tried in 47.066383333333334 min 
+
+
+Global duration: 47.066383333333334 min
+Paths found: 0
+Computation times in ms: 

@@ -1,10 +1,14 @@
 package fjab
 
+import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
-import java.nio.file.StandardOpenOption.{APPEND, CREATE, WRITE}
+import java.nio.file.StandardOpenOption.{APPEND, CREATE, WRITE, TRUNCATE_EXISTING}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.io.Source
+import scala.util.Try
 
 package object chess {
 
@@ -59,16 +63,33 @@ package object chess {
     result
   }
 
-  def writeToFile(fileName: String, content: String): Unit = {
-    try {
-      Files.write(Paths.get(fileName), content.toString.getBytes(StandardCharsets.UTF_8), CREATE, APPEND, WRITE)
+  def writeToFile(fileName: String, content: String, overwrite: Boolean = false): Unit = {
+    Try{
+      Files.write(Paths.get(fileName), content.toString.getBytes(StandardCharsets.UTF_8), CREATE, if(overwrite) TRUNCATE_EXISTING else APPEND, WRITE)
+    }.recover{
+      case t => t.printStackTrace()
     }
-    catch{
-      case e: Exception => e.printStackTrace()
-    }
-    ()
   }
 
   def `minute -> ms`(minutes: Long): Long = minutes * 60 * 1000
   def `ms -> minute`(ms: Long): Double = ms / 60.0 / 1000
+
+  def loadSolutions(initialState: File): mutable.Set[List[(Int, Int)]] = {
+    val set:mutable.Set[List[(Int, Int)]] = mutable.Set()
+
+    val lines = Source.fromFile(initialState).getLines().toList
+    for(line <- lines){
+      set += deserialiseKnightsTour(line)
+    }
+    set
+  }
+
+  def deserialiseKnightsTour(line: String): List[(Int, Int)] = {
+    val l: ListBuffer[(Int,Int)] = ListBuffer()
+    line.drop(5).replace("),", "):").split(':').foreach{ x =>
+      val xtrimmed = x.trim
+      l.append((xtrimmed(1).asDigit,xtrimmed(3).asDigit))
+    }
+    l.toList
+  }
 }

@@ -1,0 +1,16 @@
+
+program started at Sun Mar 17 21:31:32 GMT 2019
+=============== dimension: 7*7 ==================
+=============== square: (1,1) ==================
+=============== yield time: 30 MINUTES ==================
+=============== report interval: 8 permutations ==================
+=============== number of permutations to calculate: 8  ==================
+=============== permutation interval: from 1032 to 1040  ==================
+=============== number of threads: 8 ==================
+
+====> 8 permutations tried in 30.00095 min 
+
+
+Global duration: 30.001 min
+Paths found: 0
+Computation times in ms: 
