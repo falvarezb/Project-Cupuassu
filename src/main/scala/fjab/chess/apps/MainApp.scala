@@ -104,14 +104,7 @@ object MainApp extends App {
   }
 
   /**
-    * Each thread calculates a path by using a different permutation of the list of possible moves of a Knight:
-    * List((2,1), (1,2), (-1,2), (-2,1), (-2,-1), (-1,-2), (1,-2), (2,-1))
-    *
-    * A thread will stop if it does not find any solution before yieldTime
-    */
-
-  /**
-    * Multi-thread implementation
+    * Calculation of paths using the method of permutation rotation
     *
     * Each thread calculates a path by using a different permutation of the list of possible moves of a Knight:
     * List((2,1), (1,2), (-1,2), (-2,1), (-2,-1), (-1,-2), (1,-2), (2,-1))
@@ -210,18 +203,15 @@ object MainApp extends App {
 
     {
       val content = solutions.map(_.toString()).mkString("\n")
-      val stateFile = s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_state.txt"
-      writeToFile(stateFile, content, true)
+      writeToFile(solutionsFilename(dimension, sq), content, true)
     }
 
     threadPool.shutdown()
   }
 
-  def resumePathsFromSquare(initialState: File, threads: Int, yieldTime: FiniteDuration, reportInterval: Int, permutationInterval: (Int, Int) = (0, 40320)): Unit = {
-    val state = loadSolutions(initialState)
-    val dimension = math.sqrt(state.head.length).toInt
-    val sq = state.head.head
-    pathsFromSquare(dimension, sq, threads, yieldTime, reportInterval, state, permutationInterval)
+  def resumePathsFromSquare(dimension: Int, sq: Coordinate, threads: Int, yieldTime: FiniteDuration, reportInterval: Int, permutationInterval: (Int, Int) = (0, 40320)): Unit = {
+    val solutions = loadSolutions(new File(solutionsFilename(dimension, sq)))
+    pathsFromSquare(dimension, sq, threads, yieldTime, reportInterval, solutions, permutationInterval)
   }
 
   def allPathsStartingAtSquare(sq: Coordinate, numberOfSolutions: Int, app: KnightTourProblem): Unit = {
@@ -248,8 +238,8 @@ object MainApp extends App {
 
   //(7 to 7) foreach (chessboard(_))
 
-  val dimension = Configuration.dim
-  val square: Coordinate = Configuration.square
+  //val dimension = Configuration.dim
+  //val square: Coordinate = Configuration.square
   //List((1,1)).foreach(allPathsStartingAtSquare(_, 1000, WarnsdorffKnightTourApp(dim, dim)))
   //List((1,1)).foreach(allPathsStartingAtSquare(_, 2, KnightTourInFiniteBoardApp(dim, dim)))
   //octant(dim).foreach(square(dim, _))
@@ -259,8 +249,8 @@ object MainApp extends App {
   //xxx List((3,4)).foreach(square(dim, _))
 
 
-  //pathsFromSquare(dimension, square, Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval)
-  resumePathsFromSquare(new File("./reports/_7x7/pathsFromSquare1_1_state.txt"), Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval, (4440, 216))
+  pathsFromSquare(Configuration.dim, Configuration.square, Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval)
+  //resumePathsFromSquare(new File("./reports/_7x7/pathsFromSquare1_1_state.txt"), Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval, (4440, 216))
 
 //  println(summary)
 //  println(s"Global duration: ${-globalStart + System.currentTimeMillis()}")

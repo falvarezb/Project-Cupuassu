@@ -69,6 +69,7 @@ package object chess {
     }.recover{
       case t => t.printStackTrace()
     }
+    ()
   }
 
   def `minute -> ms`(minutes: Long): Long = minutes * 60 * 1000
@@ -91,5 +92,9 @@ package object chess {
       l.append((xtrimmed(1).asDigit,xtrimmed(3).asDigit))
     }
     l.toList
+  }
+
+  def solutionsFilename(dimension: Int, sq: Coordinate): String = {
+    s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_state.txt"
   }
 }
