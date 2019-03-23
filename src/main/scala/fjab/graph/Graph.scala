@@ -68,17 +68,19 @@ trait Graph[T] {
 
   }
 
-  def findPaths(from: Seq[Path], numberOfSolutions: Int): Seq[Path] = {
+  def findPaths(from: Seq[Path], yieldTime: Long = Long.MaxValue): Seq[(Path, Long)] = {
 
-    val foundPaths: ListBuffer[Path] = ListBuffer()
+    val start = System.currentTimeMillis()
+    val foundPaths: ListBuffer[(Path, Long)] = ListBuffer()
     val pathsInProgress: ListBuffer[Path] = ListBuffer() ++= from
 
     @tailrec
     def next(): Unit = pathsInProgress.headOption match{
+      case _ if System.currentTimeMillis() - start > yieldTime => //nothing
       case None => //nothing
       case Some(currentVertexPath) =>
         if(isSolution(currentVertexPath)) {
-          foundPaths += currentVertexPath.reverse
+          foundPaths += ((currentVertexPath.reverse, System.currentTimeMillis() - start))
           pathsInProgress.remove(0)
         }
         else {
@@ -88,7 +90,7 @@ trait Graph[T] {
           pathsInProgress.remove(0)
           addNeighbours(pathsInProgress, pathsToNeighbourVertices)
         }
-        if(foundPaths.length < numberOfSolutions) next()
+        next()
     }
 
     next()

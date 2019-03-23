@@ -44,10 +44,36 @@ class KnightTourTest extends FunSpec{
     }
   }
 
-  describe("neighbours of (1,2) in a 7x7 board"){
+  describe("neighbours of 1st order of (1,2) in a 7x7 board"){
     it("when using Warnsdorff algorithm"){
       val result = WarnsdorffKnightTourApp(7,7).neighbours((1,2))
       assert(result == Seq((3,1), (2,4), (3,3)))
+    }
+  }
+
+  describe("neighbours of 2nd order of (1,2) in a 7x7 board"){
+    it("when using Warnsdorff algorithm"){
+      val _1st = WarnsdorffKnightTourApp(7,7).neighbours((1,2))
+      val _2nd: Seq[List[(Int, Int)]] = _1st.flatMap{
+        x => {
+          val neighbours = WarnsdorffKnightTourApp(7,7).neighbours(x)
+          neighbours.map(List(x, _))
+        }
+      }
+      assert(_2nd == List(List((3,1), (1,2)), List((3,1), (5,2)), List((3,1), (2,3)), List((3,1), (4,3)), List((2,4), (1,6)), List((2,4), (1,2)), List((2,4), (3,6)), List((2,4), (3,2)), List((2,4), (4,5)), List((2,4), (4,3)), List((3,3), (1,2)), List((3,3), (2,1)), List((3,3), (1,4)), List((3,3), (4,1)), List((3,3), (2,5)), List((3,3), (5,2)), List((3,3), (5,4)), List((3,3), (4,5))))
+    }
+  }
+
+  describe("neighbours of 2nd order of (1,1) in a 7x7 board"){
+    it("when using Warnsdorff algorithm"){
+      val _1st = WarnsdorffKnightTourApp(7,7).neighbours((1,1))
+      val _2nd: Seq[List[(Int, Int)]] = _1st.flatMap{
+        x => {
+          val neighbours = WarnsdorffKnightTourApp(7,7).neighbours(x)
+          neighbours.map(List(x, _))
+        }
+      }
+      assert(_2nd == List(List((3,2), (1,1)), List((3,2), (1,3)), List((3,2), (5,1)), List((3,2), (2,4)), List((3,2), (5,3)), List((3,2), (4,4)), List((2,3), (1,1)), List((2,3), (1,5)), List((2,3), (3,1)), List((2,3), (4,2)), List((2,3), (4,4)), List((2,3), (3,5))))
     }
   }
 }

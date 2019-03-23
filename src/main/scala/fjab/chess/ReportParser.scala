@@ -5,7 +5,7 @@ import scala.io.Source
 
 object ReportParser extends App {
 
-  parseFile("./reports/_7x7","pathsFromSquare1_1_1552259339316.txt")
+  parseFile("./reports/_7x7","pathsFromSquare1_3_1552739248843.txt")
 
   def parseFile(path: String, fileName: String) = {
     val lines = Source.fromFile(s"$path/$fileName").getLines().toStream

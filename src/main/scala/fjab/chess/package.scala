@@ -95,6 +95,8 @@ package object chess {
   }
 
   def solutionsFilename(dimension: Int, sq: Coordinate): String = {
-    s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_state.txt"
+    s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_solutions.txt"
   }
+
+  def resultsFilename(dimension: Int, sq: Coordinate, globalDate: Long) = s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_$globalDate.txt"
 }
