@@ -76,8 +76,8 @@ trait Graph[T] {
 
     @tailrec
     def next(): Unit = pathsInProgress.headOption match{
-      case _ if System.currentTimeMillis() - start > yieldTime => //nothing
-      case None => //nothing
+      case _ if System.currentTimeMillis() - start > yieldTime => ()
+      case None => ()
       case Some(currentVertexPath) =>
         if(isSolution(currentVertexPath)) {
           foundPaths += ((currentVertexPath.reverse, System.currentTimeMillis() - start))
@@ -95,6 +95,36 @@ trait Graph[T] {
 
     next()
     foundPaths
+  }
+
+  def enumeratePaths(from: Seq[Path], yieldTime: Long = Long.MaxValue, reportInterval: Int = Int.MaxValue): Long = {
+
+    val start = System.currentTimeMillis()
+    val pathsInProgress: ListBuffer[Path] = ListBuffer() ++= from
+    var pathCounter = 0l
+
+    @tailrec
+    def next(): Unit = pathsInProgress.headOption match{
+      case _ if System.currentTimeMillis() - start > yieldTime => ()
+      case None => ()
+      case Some(currentVertexPath) =>
+        if(isSolution(currentVertexPath)) {
+          pathsInProgress.remove(0)
+          pathCounter += 1
+          if(pathCounter % reportInterval == 0) println(s"${Thread.currentThread().getName} solutions found: $pathCounter")
+        }
+        else {
+          val currentVertex = currentVertexPath.head
+          val neighbourVertices = neighbours(currentVertex).filter(isVertexEligibleForPath(_, currentVertexPath))
+          val pathsToNeighbourVertices = neighbourVertices.map(_ :: currentVertexPath)
+          pathsInProgress.remove(0)
+          addNeighbours(pathsInProgress, pathsToNeighbourVertices)
+        }
+        next()
+    }
+
+    next()
+    pathCounter
   }
 
   /**

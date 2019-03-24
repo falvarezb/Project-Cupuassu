@@ -11,6 +11,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.{DAYS, FiniteDuration}
 import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
+import scala.concurrent.duration._
 
 object MainApp extends App {
 
@@ -53,6 +54,76 @@ object MainApp extends App {
     threadPool.shutdownNow()
   }
 
+
+  def enumeratePaths(sq: Coordinate, threads: Int = 1, yieldTime: FiniteDuration = 60*24*30 minutes, reportInterval: Int = Int.MaxValue, app: KnightTourProblem, seed: Seq[List[(Int,Int)]] = Nil): Unit = {
+
+    val (x, y) = app.boardDimension
+    assert(x == y, "only square boards accepted")
+
+    val globalStart = System.currentTimeMillis()
+    val fileName = resultsFilename(x, sq, globalStart)
+    val allNeighbours = app.neighbours(sq).map(n => List(n, sq))
+    val selectedNeighbours: Seq[List[(Int, Int)]] = if (seed.nonEmpty) seed else allNeighbours.take(threads)
+
+    {
+      val content =
+        s"""
+           |program started at ${new Date()}
+           |=============== dimension: $x*$y ==================
+           |=============== square: $sq ==================
+           |=============== yield time: ${yieldTime.length} ${yieldTime.unit} ==================
+           |=============== report interval: $reportInterval solutions ==================
+           |=============== list of all neighbours: $allNeighbours ==========
+           |=============== list of selected neighbours: $selectedNeighbours ==========
+           |=============== number of threads: $threads ==================
+           |=============== implementation used: ${app.toString} ==================
+           |""".stripMargin
+
+      println(content)
+      writeToFile(fileName, content)
+    }
+
+    val threadPool = Executors.newFixedThreadPool(threads)
+    implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
+    var totalPaths = 0l
+
+    Await.result(Future.sequence(selectedNeighbours.map {
+      n =>
+        Future {
+          val numPaths: Long = app.enumeratePaths(
+            from = Seq(n),
+            yieldTime = `minute -> ms`(yieldTime.length),
+            reportInterval = reportInterval)
+
+          this.synchronized {
+
+            totalPaths += numPaths
+            val summaryContent = s"${Thread.currentThread().getName} neighbour: $n, $numPaths paths \n"
+            println(summaryContent)
+
+            val content =
+              s"""
+                 |$summaryContent
+              """.stripMargin
+            writeToFile(fileName, content)
+          }
+        }
+    }), FiniteDuration(100, DAYS))
+
+    {
+      val content =
+        s"""
+           |totalPaths: $totalPaths
+           |Global duration: ${`ms -> minute`(System.currentTimeMillis() - globalStart)} min
+           |""".stripMargin
+
+      println(content)
+      writeToFile(fileName, content)
+    }
+
+    threadPool.shutdown()
+  }
+
   /**
     * Each thread calculates a path via a different neighbour of the given square.
     *
@@ -90,6 +161,8 @@ object MainApp extends App {
     val threadPool = Executors.newFixedThreadPool(threads)
     implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
 
+    var totalPaths = 0l
+
     Await.result(Future.sequence(selectedNeighbours.map {
       n =>
         Future {
@@ -97,6 +170,7 @@ object MainApp extends App {
 
           this.synchronized {
 
+            totalPaths += result.length
             val summaryContent = s"neighbour: $n, ${result.length} paths \n"
             println(summaryContent)
 
@@ -104,7 +178,7 @@ object MainApp extends App {
               s"""
                 |$summaryContent
                 |${result.map(tuple => tuple._1).map(_.toString()).mkString("\n")}
-                |computation times: neighbour: $n - ${result.map(tuple => tuple._2).map(_.toString()).mkString(",")}
+                |computation times: $n - ${result.map(tuple => tuple._2).map(_.toString()).mkString(",")}
               """.stripMargin
             writeToFile(fileName, content)
           }
@@ -114,7 +188,7 @@ object MainApp extends App {
     {
       val content =
         s"""
-           |
+           |totalPaths: $totalPaths
            |Global duration: ${`ms -> minute`(System.currentTimeMillis() - globalStart)} min
            |""".stripMargin
 
@@ -141,7 +215,7 @@ object MainApp extends App {
     * @param sq Starting square
     * @param threads Number of threads to use
     * @param yieldTime Max time a thread can run
-    * @param reportInterval Time interval to report progress
+    * @param reportInterval Time interval (in minutes) to report progress
     * @param solutions List of solutions already found
     * @param permutationInterval Tuple of values representing the starting permutation and the number of permutations to calculate
     */
@@ -271,15 +345,37 @@ object MainApp extends App {
   //xxx List((3,4)).foreach(square(dim, _))
 
 
-  val seed = List(
-    List((1,1),(3,2), (1,3)).reverse,
-    List((1,1),(3,2), (5,1)).reverse,
-    List((1,1),(3,2), (2,4)).reverse,
-    List((1,1),(3,2), (5,3)).reverse,
-    List((1,1),(3,2), (4,4)).reverse,
-    List((1,1),(2,3)).reverse
+//  val seed = List(
+//    List((1,1),(3,2), (1,3)).reverse,
+//    List((1,1),(3,2), (5,1)).reverse,
+//    List((1,1),(3,2), (2,4)).reverse,
+//    List((1,1),(3,2), (5,3)).reverse,
+//    List((1,1),(3,2), (4,4)).reverse,
+//    List((1,1),(2,3)).reverse
+//  )
+
+  // List((2,3), (1,5)), List((2,3), (3,1)), List((2,3), (3,5)), List((2,3), (4,2)), List((2,3), (4,4))
+
+  val seed  = (
+    ListBuffer[List[(Int,Int)]]()
+    += List((1,1),(3,2), (1,3)).reverse //
+    += List((1,1),(3,2), (5,1)).reverse //
+    += List((1,1),(3,2), (2,4)).reverse //*2
+    //+= List((1,1),(3,2), (5,3)).reverse symmetrical to (1,1),(3,2), (2,4) by 180 degrees rotation
+    += List((1,1),(3,2), (4,4)).reverse //
+    ).toList
+
+
+  //`pathsFromSquare - backtracking with seed`(Configuration.square, Configuration.numberThreads, Configuration.yieldTime, KnightTourInFiniteBoardApp(Configuration.dim, Configuration.dim))
+
+  enumeratePaths(
+    sq = Configuration.square,
+    threads = Configuration.numberThreads,
+    //yieldTime = Configuration.yieldTime,
+    reportInterval = Configuration.reportInterval,
+    app = WarnsdorffKnightTourApp(Configuration.dim, Configuration.dim),
+    seed = seed
   )
-  `pathsFromSquare - backtracking with seed`(Configuration.square, Configuration.numberThreads, Configuration.yieldTime, WarnsdorffKnightTourApp(Configuration.dim, Configuration.dim), seed)
 
   //pathsFromSquare(Configuration.dim, Configuration.square, Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval)
   //resumePathsFromSquare(new File("./reports/_7x7/pathsFromSquare1_1_state.txt"), Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval, (4440, 216))
