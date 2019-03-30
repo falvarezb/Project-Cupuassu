@@ -80,12 +80,22 @@ package object chess {
 
     val lines = Source.fromFile(initialState).getLines().toList
     for(line <- lines){
-      set += deserialiseKnightsTour(line)
+      set += deserialisePath(line)
     }
     set
   }
 
-  def deserialiseKnightsTour(line: String): List[(Int, Int)] = {
+  def loadSeedFile(seedFile: File): List[List[(Int, Int)]] = {
+    val paths = ListBuffer[List[(Int, Int)]]()
+
+    val lines = Source.fromFile(seedFile).getLines().toList
+    for(line <- lines){
+      paths += deserialisePath(line).reverse
+    }
+    paths.toList
+  }
+
+  def deserialisePath(line: String): List[(Int, Int)] = {
     val l: ListBuffer[(Int,Int)] = ListBuffer()
     line.drop(5).replace("),", "):").split(':').foreach{ x =>
       val xtrimmed = x.trim
@@ -98,5 +108,5 @@ package object chess {
     s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_solutions.txt"
   }
 
-  def resultsFilename(dimension: Int, sq: Coordinate, globalDate: Long) = s"reports/_${dimension}x$dimension/pathsFromSquare${sq._1}_${sq._2}_$globalDate.txt"
+  def composeFilename(dimension: Int, sq: Coordinate, globalDate: Long, prefix: String = "paths") = s"reports/_${dimension}x$dimension/${prefix}FromSquare${sq._1}_${sq._2}_$globalDate.txt"
 }

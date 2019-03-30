@@ -33,7 +33,7 @@ class UtilFunctionsTest extends FunSpec{
   describe("parsing initial state line"){
     it("should be successful"){
       val line = "List((1,1), (3,2), (5,3))"
-      val result = deserialiseKnightsTour(line)
+      val result = deserialisePath(line)
       assert(result == List((1,1), (3,2), (5,3)))
     }
   }

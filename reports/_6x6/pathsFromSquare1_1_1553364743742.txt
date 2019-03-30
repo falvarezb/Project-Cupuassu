@@ -1,0 +1,18 @@
+
+program started at Sat Mar 23 18:12:23 GMT 2019
+=============== dimension: 6*6 ==================
+=============== square: (1,1) ==================
+=============== yield time: 90 MINUTES ==================
+=============== list of all neighbours: List(List((3,2), (1,1)), List((2,3), (1,1))) ==========
+=============== list of selected neighbours: List(List((3,2), (1,1)), List((2,3), (1,1))) ==========
+=============== number of threads: 8 ==================
+=============== implementation used: KnightTourInFiniteBoardApp(6,6) ==================
+
+neighbour: List((2,3), (1,1)), 216658 paths 
+
+              
+neighbour: List((3,2), (1,1)), 64217 paths 
+
+              
+totalPaths: 280875
+Global duration: 90.00091666666667 min

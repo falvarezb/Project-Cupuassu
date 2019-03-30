@@ -1,0 +1,159 @@
+    1  ./stage/bin/project-cupuassu
+    2  tmux ls
+    3  tmux kill-session c5_chess7X7
+    4  tmux kill-session -t c5_chess7X7
+    5  ./stage/bin/project-cupuassu
+    6  clear
+    7  ./stage/bin/project-cupuassu
+    8  sudo apt update
+    9  sudo apt install openjdk-8-jre-headless
+   10  java -version
+   11  host
+   12  hostname
+   13  ll
+   14  tmux new -s c5_chess7X7
+   15  tmux ls
+   16  tmux new -s c5_chess7X7
+   17  tmux kill-session -t c5_chess7X7
+   18  tmux ls
+   19  tmux new -s chess77
+   20  tmux ls
+   21  tmux attach -t chess77
+   22  cat /proc/cpuinfo | grep "model name"
+   23  tmux attach -t chess77
+   24  cat /proc/cpuinfo | grep "model name"
+   25  top
+   26  cat /proc/cpuinfo | grep "model name"
+   27  tmux attach -t chess77
+   28  cat hello
+   29  ls
+   30  ll
+   31  nano hello
+   32  ll
+   33  rm hello 
+   34  ll
+   35  nano hello(1,2)
+   36  tmux attach -t chess77
+   37  history
+   38  cat /proc/cpuinfo | grep "model name"
+   39  tmux attach -t chess77
+   40  ps -ef | grep java
+   41  ll -rt
+   42  ll stage/ -rt
+   43  ll stage/bin/project-cupuassu
+   44  clear
+   45  ./stage/bin/project-cupuassu
+   46  clear
+   47  ./stage/bin/project-cupuassu
+   48  ll
+   49  ll reports/
+   50  cd reports/
+   51  ll
+   52  rm *.txt
+   53  ll
+   54  mkdir _7x7
+   55  ll
+   56  cd ..
+   57  ll
+   58  printenv
+   59  printenv | grep THREADS
+   60  history | grep tmux
+   61  export NUMBER_THREADS=4
+   62  tmux new -s c5_chess7X7
+   63  tmux attach c5_chess7X7
+   64  tmux attach-session c5_chess7X7
+   65  tmux attach-session -t c5_chess7X7
+   66  top
+   67  tmux attach-session -t c5_chess7X7
+   68  top
+   69  tmux attach-session -t c5_chess7X7
+   70  ll
+   71  ls reports/_7x7/pathsFromSquare1_1_1552259339316.txt 
+   72  ll reports/_7x7/
+   73  cp reports/_7x7/pathsFromSquare1_1_1552259339316.txt result.txt
+   74  ll
+   75  less result.txt 
+   76  grep list result.txt | wc -l
+   77  grep list result.txx
+   78  grep list result.txt
+   79  grep List result.txt | wc -l
+   80  top
+   81  less result.txt 
+   82  clear
+   83  tmux attach-session -t c5_chess7X7
+   84  history
+   85  ls reports/_7x7/pathsFromSquare1_1_1552259339316.txt 
+   86  ls reports/_7x7
+   87  ll reports/_7x7
+   88  cp reports/_7x7/pathsFromSquare1_1_1552259339316 .
+   89  pwd
+   90  cp ./reports/_7x7/pathsFromSquare1_1_1552259339316 .
+   91  ll
+   92  cp ./reports/_7x7/pathsFromSquare1_1_1552259339316.txt .
+   93  ll
+   94  ll reports/_7x7
+   95  rm result.txt 
+   96  ll
+   97  rm pathsFromSquare1_1_1552259339316.txt 
+   98  ll
+   99  printenv | grep THREADS
+  100  ll
+  101  ll reports/
+  102  history
+  103  ./stage/bin/project-cupuassu
+  104  less reports/_7x7/pathsFromSquare1_1_1552259115929.txt 
+  105  rm reports/_7x7/pathsFromSquare1_1_1552259115929.txt 
+  106  ll reports/_7x7/
+  107  ./stage/bin/project-cupuassu
+  108  ll
+  109  ll reports/_7x7/
+  110  printenv
+  111  export SQUARE=1_3
+  112  printenv | grep THREADS
+  113  export NUMBER_THREADS=4
+  114  printenv | grep THREADS
+  115  history | grep tmux
+  116  tmux ls
+  117  tmux new -s c5_chess7X7
+  118  top
+  119  tmux ls
+  120  tmux attach-session -t c5_chess7X7
+  121  ll reports/_7x7/pathsFromSquare1_
+  122  ll reports/_7x7
+  123  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  124  ll
+  125  less pathsFromSquare1_3_1552739248843.txt 
+  126  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  127  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  128  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  129  less pathsFromSquare1_3_1552739248843.txt 
+  130  history
+  131  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  132  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  133  less pathsFromSquare1_3_1552739248843.txt 
+  134  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  135  ll reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  136  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  137  less pathsFromSquare1_3_1552739248843.txt 
+  138  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  139  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  140  history
+  141  tmux attach-session -t c5_chess7X7
+  142  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  143  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  144  tmux attach-session -t c5_chess7X7
+  145  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  146  grep List pathsFromSquare1_3_1552739248843.txt | wc -l
+  147  less pathsFromSquare1_3_1552739248843.txt 
+  148  tmux attach-session -t c5_chess7X7
+  149  cp reports/_7x7/pathsFromSquare1_3_1552739248843.txt .
+  150  printenv
+  151  ls
+  152  ./stage/bin/knight-tour 
+  153  ./stage/bin/project-cupuassu 
+  154  history
+  155  ll
+  156  ls reports/
+  157  history
+  158  history | grep tmux
+  159  history >> myhistoryAtAws

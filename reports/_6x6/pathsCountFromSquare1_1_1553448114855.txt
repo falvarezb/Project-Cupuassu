@@ -1,0 +1,22 @@
+
+program started at Sun Mar 24 17:21:54 UTC 2019
+=============== dimension: 6*6 ==================
+=============== square: (1,1) ==================
+=============== yield time: 43200 MINUTES ==================
+=============== report interval: 50000 solutions ==================
+=============== seed: List(List((6,2), (4,1), (2,2)), List((5,3), (4,1), (2,2)), List((3,3), (4,1), (2,2))) ==========
+=============== number of tasks: 3 ==========
+=============== number of threads: 4 ==================
+=============== implementation used: WarnsdorffKnightTourApp(6,6) ==================
+
+pool-1-thread-3 neighbour: List((3,3), (4,1), (2,2)), paths: 5017, time: 3900606 
+
+              
+pool-1-thread-2 neighbour: List((5,3), (4,1), (2,2)), paths: 5570, time: 6717193 
+
+              
+pool-1-thread-1 neighbour: List((6,2), (4,1), (2,2)), paths: 61177, time: 8553123 
+
+              
+totalPaths: 71764
+Global duration: 142.55295 min

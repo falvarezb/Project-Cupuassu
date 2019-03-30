@@ -15,10 +15,9 @@ import scala.concurrent.duration._
 
 object MainApp extends App {
 
-  val summary: mutable.Map[String, mutable.Map[String,ListBuffer[Long]]] = mutable.Map()
-
 
   def chessboard(dimension: Int) = {
+    val summary: mutable.Map[String, mutable.Map[String,ListBuffer[Long]]] = mutable.Map()
     val threadPool = Executors.newFixedThreadPool(8)
     implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
 
@@ -51,20 +50,29 @@ object MainApp extends App {
           }
       }), FiniteDuration(100, DAYS))
 
-    threadPool.shutdownNow()
+    threadPool.shutdown()
   }
 
 
-  def enumeratePaths(sq: Coordinate, threads: Int = 1, yieldTime: FiniteDuration = 60*24*30 minutes, reportInterval: Int = Int.MaxValue, app: KnightTourProblem, seed: Seq[List[(Int,Int)]] = Nil): Unit = {
+  def enumeratePaths(
+                      sq: Coordinate,
+                      threads: Int,
+                      yieldTime: FiniteDuration = 60*24*30 minutes,
+                      reportInterval: Int = Int.MaxValue,
+                      app: KnightTourProblem,
+                      seedFilePath: String): Unit = {
 
+    //Program initialisation
+    val pathSeed = loadSeedFile(new File(seedFilePath))
     val (x, y) = app.boardDimension
     assert(x == y, "only square boards accepted")
-
     val globalStart = System.currentTimeMillis()
-    val fileName = resultsFilename(x, sq, globalStart)
-    val allNeighbours = app.neighbours(sq).map(n => List(n, sq))
-    val selectedNeighbours: Seq[List[(Int, Int)]] = if (seed.nonEmpty) seed else allNeighbours.take(threads)
+    val fileName = composeFilename(x, sq, globalStart, "pathsCount")
+    val threadPool = Executors.newFixedThreadPool(threads)
+    implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
+    var totalPaths = 0l
 
+    //Program parameters summary
     {
       val content =
         s"""
@@ -72,9 +80,9 @@ object MainApp extends App {
            |=============== dimension: $x*$y ==================
            |=============== square: $sq ==================
            |=============== yield time: ${yieldTime.length} ${yieldTime.unit} ==================
-           |=============== report interval: $reportInterval solutions ==================
-           |=============== list of all neighbours: $allNeighbours ==========
-           |=============== list of selected neighbours: $selectedNeighbours ==========
+           |=============== report interval: every $reportInterval solutions ==================
+           |=============== seed: $pathSeed ==========
+           |=============== number of tasks: ${pathSeed.length} ==========
            |=============== number of threads: $threads ==================
            |=============== implementation used: ${app.toString} ==================
            |""".stripMargin
@@ -83,13 +91,12 @@ object MainApp extends App {
       writeToFile(fileName, content)
     }
 
-    val threadPool = Executors.newFixedThreadPool(threads)
-    implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
-    var totalPaths = 0l
 
-    Await.result(Future.sequence(selectedNeighbours.map {
+
+    Await.result(Future.sequence(pathSeed.map {
       n =>
         Future {
+          val start = System.currentTimeMillis()
           val numPaths: Long = app.enumeratePaths(
             from = Seq(n),
             yieldTime = `minute -> ms`(yieldTime.length),
@@ -98,7 +105,9 @@ object MainApp extends App {
           this.synchronized {
 
             totalPaths += numPaths
-            val summaryContent = s"${Thread.currentThread().getName} neighbour: $n, $numPaths paths \n"
+
+            //Task result summary
+            val summaryContent = s"${Thread.currentThread().getName} initial path: $n, paths: $numPaths, time: ${`ms -> minute`(System.currentTimeMillis() - start)} min \n"
             println(summaryContent)
 
             val content =
@@ -110,6 +119,8 @@ object MainApp extends App {
         }
     }), FiniteDuration(100, DAYS))
 
+
+    //Program result summary
     {
       val content =
         s"""
@@ -137,7 +148,7 @@ object MainApp extends App {
     assert(x == y, "only square boards accepted")
 
     val globalStart = System.currentTimeMillis()
-    val fileName = resultsFilename(x, sq, globalStart)
+    val fileName = composeFilename(x, sq, globalStart)
     val allNeighbours = app.neighbours(sq).map(n => List(n, sq))
     val selectedNeighbours: Seq[List[(Int, Int)]] = if (seed.nonEmpty) seed else allNeighbours.take(threads)
 
@@ -226,7 +237,7 @@ object MainApp extends App {
     val (from, num) = permutationInterval
     val moves = List((2, 1), (1, 2), (-1, 2), (-2, 1), (-2, -1), (-1, -2), (1, -2), (2, -1)).permutations.toList.slice(from, from + num)
     val globalStart = System.currentTimeMillis()
-    val fileName = resultsFilename(dimension, sq, globalStart)
+    val fileName = composeFilename(dimension, sq, globalStart)
 
     {
       val content =
@@ -329,34 +340,15 @@ object MainApp extends App {
 
   }
 
-//  println(s"program started at ${new Date()}")
-//  val globalStart = System.currentTimeMillis()
 
   //(7 to 7) foreach (chessboard(_))
 
-  //val dimension = Configuration.dim
-  //val square: Coordinate = Configuration.square
   //List((1,1)).foreach(allPathsStartingAtSquare(_, 1000, WarnsdorffKnightTourApp(dim, dim)))
   //List((1,1)).foreach(allPathsStartingAtSquare(_, 2, KnightTourInFiniteBoardApp(dim, dim)))
   //octant(dim).foreach(square(dim, _))
   //List((1,2),(1,4),(2,3),(3,4),(4,4)).foreach(square(dim, _))
-  //-> List((4,4)).foreach(square(dim, _))
-  //List((1,1)).foreach(anyPathStartingAtSquare(_, WarnsdorffKnightTourApp(dim, dim), 1))
-  //xxx List((3,4)).foreach(square(dim, _))
 
-
-//  val seed = List(
-//    List((1,1),(3,2), (1,3)).reverse,
-//    List((1,1),(3,2), (5,1)).reverse,
-//    List((1,1),(3,2), (2,4)).reverse,
-//    List((1,1),(3,2), (5,3)).reverse,
-//    List((1,1),(3,2), (4,4)).reverse,
-//    List((1,1),(2,3)).reverse
-//  )
-
-  // List((2,3), (1,5)), List((2,3), (3,1)), List((2,3), (3,5)), List((2,3), (4,2)), List((2,3), (4,4))
-
-  val seed  = (
+  val seed11  = (
     ListBuffer[List[(Int,Int)]]()
     += List((1,1),(3,2), (1,3)).reverse //
     += List((1,1),(3,2), (5,1)).reverse //
@@ -365,16 +357,25 @@ object MainApp extends App {
     += List((1,1),(3,2), (4,4)).reverse //
     ).toList
 
+  val seed22  = (
+    ListBuffer[List[(Int,Int)]]()
+      += List((2,2),(4,1),(6,2)).reverse //
+      += List((2,2),(4,1),(5,3)).reverse //
+      += List((2,2),(4,1),(3,3)).reverse //
+      //+= List((1,1),(3,2), (5,3)).reverse symmetrical to (1,1),(3,2), (2,4) by 180 degrees rotation
+      //+= List((1,1),(3,2), (4,4)).reverse //
+    ).toList
+
 
   //`pathsFromSquare - backtracking with seed`(Configuration.square, Configuration.numberThreads, Configuration.yieldTime, KnightTourInFiniteBoardApp(Configuration.dim, Configuration.dim))
 
   enumeratePaths(
     sq = Configuration.square,
     threads = Configuration.numberThreads,
-    //yieldTime = Configuration.yieldTime,
+    yieldTime = Configuration.yieldTime,
     reportInterval = Configuration.reportInterval,
-    app = WarnsdorffKnightTourApp(Configuration.dim, Configuration.dim),
-    seed = seed
+    app = KnightTourInFiniteBoardApp(Configuration.dim, Configuration.dim),
+    seedFilePath = Configuration.seedFile
   )
 
   //pathsFromSquare(Configuration.dim, Configuration.square, Configuration.numberThreads, Configuration.yieldTime, Configuration.reportInterval)

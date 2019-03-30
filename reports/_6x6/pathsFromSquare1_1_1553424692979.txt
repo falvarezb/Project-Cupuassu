@@ -1,0 +1,18 @@
+
+program started at Sun Mar 24 10:51:32 GMT 2019
+=============== dimension: 6*6 ==================
+=============== square: (1,1) ==================
+=============== yield time: 1 MINUTES ==================
+=============== list of all neighbours: List(List((3,2), (1,1)), List((2,3), (1,1))) ==========
+=============== list of selected neighbours: List(List((3,2), (1,1)), List((2,3), (1,1))) ==========
+=============== number of threads: 8 ==================
+=============== implementation used: WarnsdorffKnightTourApp(6,6) ==================
+
+neighbour: List((2,3), (1,1)), 12428 paths 
+
+              
+neighbour: List((3,2), (1,1)), 12839 paths 
+
+              
+totalPaths: 25267
+Global duration: 1.0010166666666667 min

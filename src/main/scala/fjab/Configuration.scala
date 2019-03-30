@@ -16,4 +16,5 @@ object Configuration {
   val yieldTime: FiniteDuration = (config.getIntList("yieldTime").get(0): Int) minutes
   val reportInterval: Int = config.getIntList("reportInterval").get(0)
   val numberThreads: Int = config.getIntList("numThreads").get(0)
+  val seedFile: String = config.getStringList("seedFile").get(0)
 }
