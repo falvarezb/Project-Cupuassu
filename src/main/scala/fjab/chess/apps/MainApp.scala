@@ -54,10 +54,9 @@ object MainApp extends App {
   }
 
 
+  @MultiThread
   def enumeratePaths(
-                      sq: Coordinate,
                       threads: Int,
-                      yieldTime: FiniteDuration = 60*24*30 minutes,
                       reportInterval: Int = Int.MaxValue,
                       app: KnightTourProblem,
                       seedFilePath: String): Unit = {
@@ -67,10 +66,10 @@ object MainApp extends App {
     val (x, y) = app.boardDimension
     assert(x == y, "only square boards accepted")
     val globalStart = System.currentTimeMillis()
-    val fileName = composeFilename(x, sq, globalStart, "pathsCount")
+    val fileName = composeFilename(x, globalStart, "pathsCount")
     val threadPool = Executors.newFixedThreadPool(threads)
     implicit val ec: ExecutionContextExecutor = ExecutionContext.fromExecutor(threadPool)
-    var totalPaths = 0l
+    var totalPaths: Long = 0l
 
     //Program parameters summary
     {
@@ -78,8 +77,6 @@ object MainApp extends App {
         s"""
            |program started at ${new Date()}
            |=============== dimension: $x*$y ==================
-           |=============== square: $sq ==================
-           |=============== yield time: ${yieldTime.length} ${yieldTime.unit} ==================
            |=============== report interval: every $reportInterval solutions ==================
            |=============== seed: $pathSeed ==========
            |=============== number of tasks: ${pathSeed.length} ==========
@@ -99,7 +96,6 @@ object MainApp extends App {
           val start = System.currentTimeMillis()
           val numPaths: Long = app.enumeratePaths(
             from = Seq(n),
-            yieldTime = `minute -> ms`(yieldTime.length),
             reportInterval = reportInterval)
 
           this.synchronized {
@@ -150,7 +146,7 @@ object MainApp extends App {
     val globalStart = System.currentTimeMillis()
     val fileName = composeFilename(x, sq, globalStart)
     val allNeighbours = app.neighbours(sq).map(n => List(n, sq))
-    val selectedNeighbours: Seq[List[(Int, Int)]] = if (seed.nonEmpty) seed else allNeighbours.take(threads)
+    val selectedNeighbours: Seq[List[(Int, Int)]] = if (seed.nonEmpty) seed else allNeighbours
 
     {
       val content =
@@ -265,7 +261,6 @@ object MainApp extends App {
     Await.result(Future.sequence(moves.map {
       moves =>
         Future {
-            //val localDeadEnds = new ListBuffer[Long]()
             val app = KnightTourWithCustomMovesApp(dimension, dimension, moves)
             val localStart = System.currentTimeMillis()
             val result = app.findPath(List(List(sq)), `minute -> ms`(yieldTime.length))
@@ -273,7 +268,6 @@ object MainApp extends App {
           this.synchronized {
 
               counter += 1
-              //deadEndTimes ++= localDeadEnds
               if(counter % reportInterval == 0){
                 val content = s"\n====> $counter permutations tried in ${`ms -> minute`(System.currentTimeMillis() - globalStart)} min \n"
                 println(content)
@@ -370,9 +364,7 @@ object MainApp extends App {
   //`pathsFromSquare - backtracking with seed`(Configuration.square, Configuration.numberThreads, Configuration.yieldTime, KnightTourInFiniteBoardApp(Configuration.dim, Configuration.dim))
 
   enumeratePaths(
-    sq = Configuration.square,
     threads = Configuration.numberThreads,
-    yieldTime = Configuration.yieldTime,
     reportInterval = Configuration.reportInterval,
     app = KnightTourInFiniteBoardApp(Configuration.dim, Configuration.dim),
     seedFilePath = Configuration.seedFile

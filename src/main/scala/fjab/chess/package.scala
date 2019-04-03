@@ -85,6 +85,13 @@ package object chess {
     set
   }
 
+  /**
+    * Seed file must contain lines representing the base path to be used by the program.
+    * The lines must have the following format:
+    *
+    * List((1,1), (3,2), (5,3))
+    *
+    */
   def loadSeedFile(seedFile: File): List[List[(Int, Int)]] = {
     val paths = ListBuffer[List[(Int, Int)]]()
 
@@ -109,4 +116,6 @@ package object chess {
   }
 
   def composeFilename(dimension: Int, sq: Coordinate, globalDate: Long, prefix: String = "paths") = s"reports/_${dimension}x$dimension/${prefix}FromSquare${sq._1}_${sq._2}_$globalDate.txt"
+
+  def composeFilename(dimension: Int, globalDate: Long, prefix: String) = s"reports/_${dimension}x$dimension/${prefix}_$globalDate.txt"
 }

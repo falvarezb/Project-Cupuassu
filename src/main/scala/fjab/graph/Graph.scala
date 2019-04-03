@@ -30,7 +30,6 @@ trait Graph[T] {
     */
   def findPath(from: Seq[Path], yieldTime: Long = Long.MaxValue): Path = {
 
-    //val deadEndsLength = new ListBuffer[Long]()
     val start = System.currentTimeMillis()
     val paths: ListBuffer[Path] = ListBuffer() ++= from
 
@@ -43,9 +42,6 @@ trait Graph[T] {
         else {
           val currentVertex = currentVertexPath.head
           val neighbourVertices = neighbours(currentVertex).filter(isVertexEligibleForPath(_, currentVertexPath))
-//          if(neighbourVertices.isEmpty){
-//            deadEndsLength += currentVertexPath.length
-//          }
           val pathsToNeighbourVertices = neighbourVertices.map(_ :: currentVertexPath)
           paths.remove(0)
           addNeighbours(paths, pathsToNeighbourVertices)
@@ -53,19 +49,7 @@ trait Graph[T] {
         }
     }
 
-    val r = next()
-
-//      val l = deadEndsLength.length.toDouble
-//      val avg = deadEndsLength.sum/l
-//      val max = deadEndsLength.max
-//      //val std = deadEnds.map(x => (x-avg)*(x-avg)).sum/l
-//    val min = deadEndsLength.min
-//      println(s"${Thread.currentThread().getName}: numDeadEnds:$l, avgDepth:$avg, maxDepth:$max, minDepth:$min")
-
-    r
-
-
-
+    next()
   }
 
   def findPaths(from: Seq[Path], yieldTime: Long = Long.MaxValue): Seq[(Path, Long)] = {
@@ -97,15 +81,13 @@ trait Graph[T] {
     foundPaths
   }
 
-  def enumeratePaths(from: Seq[Path], yieldTime: Long = Long.MaxValue, reportInterval: Int = Int.MaxValue): Long = {
+  def enumeratePaths(from: Seq[Path], reportInterval: Int = Int.MaxValue): Long = {
 
-    val start = System.currentTimeMillis()
     val pathsInProgress: ListBuffer[Path] = ListBuffer() ++= from
     var pathCounter = 0l
 
     @tailrec
     def next(): Unit = pathsInProgress.headOption match{
-      case _ if System.currentTimeMillis() - start > yieldTime => ()
       case None => ()
       case Some(currentVertexPath) =>
         if(isSolution(currentVertexPath)) {

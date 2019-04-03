@@ -1,0 +1,25 @@
+
+program started at Sun Mar 24 21:50:39 UTC 2019
+=============== dimension: 6*6 ==================
+=============== square: (2,2) ==================
+=============== yield time: 43200 MINUTES ==================
+=============== report interval: every 20000 solutions ==================
+=============== seed: List(List((4,3), (2,2)), List((4,1), (2,2)), List((3,4), (2,2)), List((1,4), (2,2))) ==========
+=============== number of tasks: 4 ==========
+=============== number of threads: 4 ==================
+=============== implementation used: KnightTourInFiniteBoardApp(6,6) ==================
+
+pool-1-thread-1 initial path: List((4,3), (2,2)), paths: 14937, time: 51.104866666666666 min 
+
+              
+pool-1-thread-3 initial path: List((3,4), (2,2)), paths: 14937, time: 51.907666666666664 min 
+
+              
+pool-1-thread-4 initial path: List((1,4), (2,2)), paths: 71764, time: 104.73101666666666 min 
+
+              
+pool-1-thread-2 initial path: List((4,1), (2,2)), paths: 71764, time: 182.30208333333334 min 
+
+              
+totalPaths: 173402
+Global duration: 182.30285 min
